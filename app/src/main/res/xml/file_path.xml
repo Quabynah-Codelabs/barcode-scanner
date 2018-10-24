@@ -6,7 +6,5 @@
 	<cache-path
 		name="barcodes"
 		path="cache/" />
-	<external-path
-		name="barcodes"
-		path="external/" />
+	<external-path name="external_files" path="." />
 </paths>

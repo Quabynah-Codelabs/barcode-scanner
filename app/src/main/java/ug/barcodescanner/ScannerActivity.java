@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,6 +13,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -146,6 +146,7 @@ public class ScannerActivity extends AppCompatActivity {
 		//Create intent to capture image
 		Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		
+		
 		if (cameraIntent.resolveActivity(getPackageManager()) != null) {
 			//Has a camera application
 			File photoFile = null;
@@ -157,10 +158,17 @@ public class ScannerActivity extends AppCompatActivity {
 				Log.i(TAG, "IOException");
 				displayMessage("An exception occurred when creating the file to save our image");
 			}
+			
 			// Continue only if the File was successfully created
 			if (photoFile != null) {
-				cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-				startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
+				cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+						FileProvider.getUriForFile(this, FILE_AUTHORITY, photoFile));
+				try {
+					startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
+				} catch (Exception e) {
+					displayMessage("Cannot access file");
+					Log.d(TAG, "openCamera: " + e.getLocalizedMessage());
+				}
 			}
 			
 		} else {
@@ -193,13 +201,14 @@ public class ScannerActivity extends AppCompatActivity {
 		if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 			try {
 				//Get bitmap from image
-				Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(mCurrentPhotoPath));
+				Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),
+						FileProvider.getUriForFile(this, FILE_AUTHORITY, new File(mCurrentPhotoPath)));
 				
 				//Scan bitmap
 				scanImageFromBitmap(bitmap);
 				
-			} catch (IOException e) {
-				displayMessage("Could not retrieve the bitmpa from the image taken");
+			} catch (Exception e) {
+				displayMessage("Could not retrieve the bitmap from the image taken");
 			}
 		}
 	}
@@ -207,7 +216,7 @@ public class ScannerActivity extends AppCompatActivity {
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if (requestCode == RC_PERMISSION_CODE && grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+		if (requestCode == RC_PERMISSION_CODE && grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			displayMessage("You can now use the camera");
 		}
 	}
