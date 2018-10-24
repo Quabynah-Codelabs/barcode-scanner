@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1039378636565",
+    "firebase_url": "https://ug-short-course.firebaseio.com",
+    "project_id": "ug-short-course",
+    "storage_bucket": "ug-short-course.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1039378636565:android:196fe38399b92add",
+        "android_client_info": {
+          "package_name": "ug.barcodescanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1039378636565-nrsl301lkc5ou2sbjq36ub59b3ngjq73.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ug.barcodescanner",
+            "certificate_hash": "df6bfa63fc4b16462113fc2d18b19dc8bae1a547"
+          }
+        },
+        {
+          "client_id": "1039378636565-adiu3g39lpuq8kl3267q2c6mhr6df2sc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCemUiGFzRB6_jQ-ef2KWu5uWZ7FDiVtV8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1039378636565-adiu3g39lpuq8kl3267q2c6mhr6df2sc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
