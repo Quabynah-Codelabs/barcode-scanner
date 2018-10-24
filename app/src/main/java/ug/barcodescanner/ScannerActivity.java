@@ -204,7 +204,7 @@ public class ScannerActivity extends AppCompatActivity {
 				//Get bitmap from image
 				Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),
 						Uri.parse(mCurrentPhotoPath));
-				
+				// TODO: 10/24/2018 Fix this: cannot find uri for path 
 				//Scan bitmap
 				scanImageFromBitmap(bitmap);
 				
