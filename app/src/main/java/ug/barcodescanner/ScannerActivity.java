@@ -1,17 +1,23 @@
 package ug.barcodescanner;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -38,12 +44,21 @@ public class ScannerActivity extends AppCompatActivity {
 	//TAG
 	private static final String TAG = "Barcode Scanner";
 	private static final int REQUEST_IMAGE_CAPTURE = 3;
+	private static final int RC_PERMISSION_CODE = 6;
+	
+	public static final String FILE_AUTHORITY = "ug.barcodescanner.fileprovider";
+	
 	private String mCurrentPhotoPath;
+	
+	private TextView barcodeText;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_scanner);
+		
+		//Initialize textView
+		barcodeText = findViewById(R.id.barcode_text);
 		
 		//Firebase initialization
 		FirebaseApp.initializeApp(this);
@@ -55,8 +70,19 @@ public class ScannerActivity extends AppCompatActivity {
 								FirebaseVisionBarcode.FORMAT_QR_CODE,
 								FirebaseVisionBarcode.FORMAT_AZTEC)
 						.build();
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
 		
-		
+		//Check whether the application has permission to use the camera
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+				    ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+			//Request permissions
+			String[] permissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+			requestPermissions(permissions, RC_PERMISSION_CODE);
+		}
 	}
 	
 	/**
@@ -91,14 +117,16 @@ public class ScannerActivity extends AppCompatActivity {
 									                                           String password = barcode.getWifi().getPassword();
 									                                           int type = barcode.getWifi().getEncryptionType();
 									
-									                                           // TODO: 10/24/2018 Add textview here
+									                                           //Show raw value
+									                                           barcodeText.setText(rawValue);
 									
 									                                           break;
 								                                           case FirebaseVisionBarcode.TYPE_URL:
 									                                           String title = barcode.getUrl().getTitle();
 									                                           String url = barcode.getUrl().getUrl();
 									
-									                                           // TODO: 10/24/2018 Add textview here
+									                                           //Show raw value
+									                                           barcodeText.setText(rawValue);
 									
 									                                           break;
 							                                           }
@@ -114,7 +142,7 @@ public class ScannerActivity extends AppCompatActivity {
 				                                           });
 	}
 	
-	private void openCamera() {
+	public void openCamera(View v) {
 		//Create intent to capture image
 		Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		
@@ -173,6 +201,14 @@ public class ScannerActivity extends AppCompatActivity {
 			} catch (IOException e) {
 				displayMessage("Could not retrieve the bitmpa from the image taken");
 			}
+		}
+	}
+	
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		if (requestCode == RC_PERMISSION_CODE && grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+			displayMessage("You can now use the camera");
 		}
 	}
 	
