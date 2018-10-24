@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -202,13 +203,14 @@ public class ScannerActivity extends AppCompatActivity {
 			try {
 				//Get bitmap from image
 				Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),
-						FileProvider.getUriForFile(this, FILE_AUTHORITY, new File(mCurrentPhotoPath)));
+						Uri.parse(mCurrentPhotoPath));
 				
 				//Scan bitmap
 				scanImageFromBitmap(bitmap);
 				
 			} catch (Exception e) {
 				displayMessage("Could not retrieve the bitmap from the image taken");
+				Log.d(TAG, "onActivityResult: " + e.getLocalizedMessage());
 			}
 		}
 	}
